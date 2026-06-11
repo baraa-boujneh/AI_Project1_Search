@@ -4,63 +4,50 @@ This repository contains the solution for Artificial Intelligence I - Project 1 
 
 ## Requirements
 
-- Python 3.11
 - uv
 
 ## Setup
 
-### Install Python 3.11
+Install Python 3.11 if needed:
 
 ```bash
 uv python install 3.11
-``` 
-
-### Create the virtual environment
-
-```bash
-uv venv 
 ```
 
-### Activate the environment
+Create or update the project environment:
 
-#### Nushell
+```bash
+uv sync
+```
 
-```nu
+Activate the environment:
+
+```bash
+# bash/zsh
+
+source .venv/bin/activate
+```
+
+```bash
+# nushell
+
 overlay use .venv/bin/activate.nu
 ```
 
-#### Bash / Zsh
+Verify the installation:
 
 ```bash
-source .venv/bin/activate 
-```
-
-### Verify the installation
-
-```bash
-python --version 
+python --version
 ```
 
 Expected output:
 
 ```bash
-text Python 3.11.x 
-```
-
-## Running Pacman
-
-```bash
-python pacman.py 
-```
-
-## Running the Autograder
-
-```bash
-python autograder.py 
+Python 3.11.x
 ```
 
 ## Notes
 
-- Do not modify files other than search.py and searchAgents.py.
+- Do not modify files other than `search.py` and `searchAgents.py`.
 - Do not add unnecessary third-party dependencies.
-- The .venv directory should not be committed to Git.
+- The `.venv` directory should not be commit to **Git**.
