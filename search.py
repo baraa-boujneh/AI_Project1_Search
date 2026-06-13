@@ -92,7 +92,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     "*** YOUR CODE HERE ***"
     from util import Stack
 
-    #should we call it a fringe instead of stack or queue or ... ? just for Search algorithms convention ??
+    #should we call it a fringe instead of stack or queue or ... ? just for Search algorithms naming convention ??
     stack = Stack()
     start_state = problem.getStartState()
 
