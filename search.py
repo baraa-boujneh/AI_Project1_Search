@@ -187,15 +187,15 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
 
     pq.push((start_state, [], 0), heuristic(start_state, problem))
 
-    best_cost = {}
+    best_cost = {} #keep on track of the least known cost g (value) to a state (key)  so far
 
     while not pq.isEmpty():
         state, actions, current_cost = pq.pop()
 
-        if state in best_cost and current_cost > best_cost[state]:
+        if state in best_cost and current_cost > best_cost[state]: #check if we visited this state before and whether our current cost worse than
             continue
 
-        best_cost[state] = current_cost
+        best_cost[state] = current_cost  # that means either it is first time we visit the state or we find less g (cost) for it
 
         if problem.isGoalState(state):
             return actions
@@ -204,7 +204,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
             new_actions = actions + [action]
             new_cost = current_cost + cost
 
-            if successor not in best_cost or new_cost < best_cost[successor]:
+            if successor not in best_cost or new_cost < best_cost[successor]: #expand all the children even if exist in the fringe, retrieve all parent scope e.g Craiova in TSP Ubung
                 priority = new_cost + heuristic(successor, problem)
                 pq.push((successor, new_actions, new_cost), priority)
 

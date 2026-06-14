@@ -137,7 +137,7 @@ class SearchAgent(Agent):
         else:
             return Directions.STOP
 
-class PositionSearchProblem(search.SearchProblem):
+class PositionSearchProblem(search.SearchProblem): #this is the Search problem implementation that a Search Agent by default solves
     """
     A search problem defines the state space, start state, goal test, successor
     function and cost function.  This search problem can be used to find paths
@@ -296,6 +296,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        return (self.startingPosition, ()) # store the state as a python tuple ((x,y),corner_pos_tracker)
         util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
@@ -303,6 +304,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        return set(state[1]) == set(self.corners)
         util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
@@ -326,6 +328,19 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+        
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty] :
+                succ_pos = (nextx, nexty)
+                succ_corner = list(state[1])
+                if succ_pos in self.corners and succ_pos not in state[1]:
+                    succ_corner.append(succ_pos) # if we are in a first time visited corner
+
+                successors.append(((succ_pos, tuple(succ_corner)), action, 1))
+
+        
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -342,6 +357,7 @@ class CornersProblem(search.SearchProblem):
             x, y = int(x + dx), int(y + dy)
             if self.walls[x][y]: return 999999
         return len(actions)
+
 
 
 
@@ -362,6 +378,29 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+
+    heuristic = 0           #initilaize at 0 to return in case h(goal)=0 i.e. not unvisited_corner
+    prev_pos = state[0]     
+
+    unvisited_corners = list(set(corners) - set(state[1]))
+
+    #calculate distance to the nearest then move to it and caluclate again distance to its nearest corner till visiting all corners
+    while unvisited_corners:
+        closest_corner = unvisited_corners[0]
+        closest_corner_distance = util.manhattanDistance(prev_pos, closest_corner)
+
+        for corner in unvisited_corners[1:]:
+            distance = util.manhattanDistance(prev_pos, corner)
+
+            if distance < closest_corner_distance:
+                closest_corner_distance = distance
+                closest_corner = corner
+        
+        heuristic += closest_corner_distance
+        unvisited_corners.remove(closest_corner)
+        prev_pos = closest_corner
+
+    return heuristic
     return 0 # Default to trivial solution
 
 
