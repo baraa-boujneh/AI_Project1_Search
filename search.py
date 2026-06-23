@@ -92,15 +92,14 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     "*** YOUR CODE HERE ***"
     from util import Stack
 
-    #should we call it a fringe instead of stack or queue or ... ? just for Search algorithms naming convention ??
-    stack = Stack()
+    fringe = Stack()
     start_state = problem.getStartState()
 
-    stack.push((start_state, []))
+    fringe.push((start_state, []))
     visited = set()
 
-    while not stack.isEmpty():
-        state, actions = stack.pop()
+    while not fringe.isEmpty():
+        state, actions = fringe.pop()
 
         if problem.isGoalState(state):
             return actions
@@ -110,7 +109,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
             for successor, action, cost in problem.getSuccessors(state):
                 if successor not in visited:
-                    stack.push((successor, actions + [action]))
+                    fringe.push((successor, actions + [action]))
 
     return []
 
@@ -119,14 +118,14 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     "*** YOUR CODE HERE ***"
     from util import Queue
 
-    queue = Queue()
+    fringe = Queue()
     start_state = problem.getStartState()
 
-    queue.push((start_state, []))
+    fringe.push((start_state, []))
     visited = set()
 
-    while not queue.isEmpty():
-        state, actions = queue.pop()
+    while not fringe.isEmpty():
+        state, actions = fringe.pop()
 
         if problem.isGoalState(state):
             return actions
@@ -136,7 +135,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
             for successor, action, cost in problem.getSuccessors(state):
                 if successor not in visited:
-                    queue.push((successor, actions + [action]))
+                    fringe.push((successor, actions + [action]))
 
     return []
 
@@ -145,14 +144,14 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
 
-    pq = PriorityQueue()
+    fringe = PriorityQueue()
     start_state = problem.getStartState()
 
-    pq.push((start_state, [], 0), 0)
+    fringe.push((start_state, []), 0)
     visited = set()
 
-    while not pq.isEmpty():
-        state, actions, current_cost = pq.pop()
+    while not fringe.isEmpty():
+        state, actions = fringe.pop()
 
         if state in visited:
             continue
@@ -162,11 +161,14 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
         if problem.isGoalState(state):
             return actions
 
-        for successor, action, cost in problem.getSuccessors(state):
+        for successor, action, stepCost in problem.getSuccessors(state):
             if successor not in visited:
                 new_actions = actions + [action]
-                new_cost = current_cost + cost
-                pq.push((successor, new_actions, new_cost), new_cost)
+
+                # Total path cost from start to successor
+                new_cost = problem.getCostOfActions(new_actions)
+
+                fringe.push((successor, new_actions), new_cost)
 
     return []
 
@@ -182,20 +184,19 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
 
-    pq = PriorityQueue()
+    fringe = PriorityQueue()
     start_state = problem.getStartState()
 
-    pq.push((start_state, [], 0), heuristic(start_state, problem))
+    fringe.push((start_state, [], 0), heuristic(start_state, problem))
 
-    best_cost = {} #keep on track of the least known cost g (value) to a state (key)  so far
+    best_cost = {} 
+    while not fringe.isEmpty():
+        state, actions, current_cost = fringe.pop()
 
-    while not pq.isEmpty():
-        state, actions, current_cost = pq.pop()
-
-        if state in best_cost and current_cost > best_cost[state]: #check if we visited this state before and whether our current cost worse than
+        if state in best_cost and current_cost > best_cost[state]: 
             continue
 
-        best_cost[state] = current_cost  # that means either it is first time we visit the state or we find less g (cost) for it
+        best_cost[state] = current_cost  
 
         if problem.isGoalState(state):
             return actions
@@ -204,12 +205,13 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
             new_actions = actions + [action]
             new_cost = current_cost + cost
 
-            if successor not in best_cost or new_cost < best_cost[successor]: #expand all the children even if exist in the fringe, retrieve all parent scope e.g Craiova in TSP Ubung
+            if successor not in best_cost or new_cost < best_cost[successor]: 
                 priority = new_cost + heuristic(successor, problem)
-                pq.push((successor, new_actions, new_cost), priority)
+                fringe.push((successor, new_actions, new_cost), priority)
 
     return []
 
+    util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
